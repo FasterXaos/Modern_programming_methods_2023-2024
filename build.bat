@@ -1,4 +1,5 @@
 @echo off
+setlocal EnableDelayedExpansion
 
 set BUILD_TYPE=Ninja
 set BUILD_SUFFIX=ninja
@@ -15,4 +16,14 @@ cd %BUILD_FOLDER%
 cmake -G %BUILD_TYPE% ..\%SOURCE_FOLDER%
 cmake --build .
 
-copy ..\%SOURCE_FOLDER%\radix_sort_mf\run_radix_sort_mf.bat .\radix_sort_mf
+set arr[0].file=run_radix_sort.bat
+set arr[1].file=run_radix_sort_mf.bat
+
+set arr[0].folder=radix_sort
+set arr[1].folder=radix_sort_mf
+
+for /L %%i in (0,1,1) do ( 
+	copy ..\%SOURCE_FOLDER%\!arr[%%i].folder!\!arr[%%i].file! .\!arr[%%i].folder!
+)
+
+copy ..\run_tests.bat .
