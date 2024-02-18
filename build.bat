@@ -1,8 +1,14 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-set BUILD_TYPE=Ninja
-set BUILD_SUFFIX=ninja
+::
+:: Вид сборки / суффикс в названии каталога сборки
+::
+:: "Ninja" / "ninja"
+:: "Visual Studio 17 2022" / "visual_studio"
+::
+set BUILD_TYPE="Visual Studio 17 2022"
+set BUILD_SUFFIX=visual_studio
 
 chcp 65001
 
@@ -27,3 +33,4 @@ for /L %%i in (0,1,1) do (
 )
 
 copy ..\run_tests.bat .
+
