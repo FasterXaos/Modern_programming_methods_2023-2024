@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <random>
 
 namespace EAbrakhin {
@@ -6,8 +6,6 @@ namespace EAbrakhin {
 }
 
 int main() {
-    std::setlocale(LC_ALL, "");
-
     std::mt19937 mt(time(0));
     std::uniform_int_distribution<int> dist(0, 100);
 
@@ -23,13 +21,13 @@ int main() {
 
     EAbrakhin::sort_by_radix(arr, arr_size);
 
-    std::cout << "Массив после сортировки:";
+    std::cout << "Привет:";
     for (int i = 0; i < arr_size; i++) {
         std::cout << ' ' << arr[i];
     }
     std::cout << std::endl;
 
-    system("pause");
+    //system("pause");
 
     return 0;
 }

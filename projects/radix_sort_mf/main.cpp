@@ -4,8 +4,6 @@
 #include "radix_sort.hpp"
 
 int main() {
-    std::setlocale(LC_ALL, "");
-
     std::mt19937 mt(time(0));
     std::uniform_int_distribution<int> dist(0, 100);
 
