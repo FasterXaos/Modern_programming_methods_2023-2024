@@ -1,5 +1,5 @@
 @echo off
 chcp 65001
-ctest -j N --output-on-failure
+ctest -j N --output-on-failure -R %1
 
 cmd /k
