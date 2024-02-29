@@ -1,13 +1,14 @@
-﻿#include <cstring>
+﻿#include <algorithm>
+#include <cstring>
 
 #include "long_number.hpp"
 
 namespace EAbrakhin {
-	LongNumber::LongNumber() : 
+	LongNumber::LongNumber() :
+		numbers(new int[1]),
 		length(1), 
 		isNegative(0)
 	{
-		numbers = new int[1];
 		numbers[0] = 0;
 	}
 
@@ -28,12 +29,33 @@ namespace EAbrakhin {
 		}
 	}
 
+	LongNumber::LongNumber(long long value) {
+		if (value < 0) {
+			isNegative = 1;
+			value = -value;
+		} else
+			isNegative = 0;
+
+		long long temp = value;
+		length = 0;
+		while (temp > 0) {
+			temp /= 10;
+			++length;
+		}
+
+		numbers = new int[length];
+
+		for (int i = length - 1; i >= 0; --i) {
+			numbers[i] = value % 10;
+			value /= 10;
+		}
+	}
+
 	LongNumber::LongNumber(const LongNumber& x) : 
-		numbers(nullptr), 
+		numbers(new int[x.length]),
 		length(x.length), 
 		isNegative(x.isNegative)
 	{
-		numbers = new int[length];
 		for (int i = 0; i < length; ++i) {
 			numbers[i] = x.numbers[i];
 		}
@@ -53,6 +75,7 @@ namespace EAbrakhin {
 	LongNumber::~LongNumber() {
 		delete[] numbers;
 	}
+
 	
 	LongNumber& LongNumber::operator = (const char* const str) {
 		delete[] numbers;
@@ -65,11 +88,36 @@ namespace EAbrakhin {
 			isNegative = 1;
 			start_index = 1;
 			--length;
-		}
+		} else
+			isNegative = 0;
 
 		numbers = new int[length];
 		for (int i = start_index; i < length + isNegative; ++i) {
 			numbers[i - start_index] = str[i] - STR_ZERO;
+		}
+
+		return *this;
+	}
+
+	LongNumber& LongNumber::operator = (long long value) {
+		if (value < 0) {
+			isNegative = 1;
+			value = -value;
+		} else
+			isNegative = 0;
+
+		long long temp = value;
+		length = 0;
+		while (temp > 0) {
+			temp /= 10;
+			++length;
+		}
+
+		delete[] numbers;
+		numbers = new int[length];
+		for (int i = length - 1; i >= 0; --i) {
+			numbers[i] = value % 10;
+			value /= 10;
 		}
 
 		return *this;
@@ -106,6 +154,7 @@ namespace EAbrakhin {
 		return *this;
 	}
 	
+
 	bool LongNumber::operator == (const LongNumber& x) const {
 		if (length != x.length || isNegative != x.isNegative) {
 			return false;
@@ -154,6 +203,7 @@ namespace EAbrakhin {
 		return (*this < x) || (*this == x);
 	}
 
+
 	LongNumber LongNumber::operator+() const {
 		return *this;
 	}
@@ -164,6 +214,7 @@ namespace EAbrakhin {
 		
 		return negated;
 	}
+
 	
 	LongNumber LongNumber::operator + (const LongNumber& x) const {
 		if (isNegative != x.isNegative)
@@ -280,22 +331,128 @@ namespace EAbrakhin {
 	}
 	
 	LongNumber LongNumber::operator * (const LongNumber& x) const {
-		// TODO
+		if (*this == LongNumber("0") || x == LongNumber("0"))
+			return LongNumber("0");
+
+		int resultSize = length + x.length;
+		int* resultDigits = new int[resultSize];
+
+		for (int i = 0; i < resultSize; ++i) {
+			resultDigits[i] = 0;
+		}
+
+		for (int i = length - 1; i >= 0; --i) {
+			int carry = 0;
+			for (int j = x.length - 1; j >= 0; --j) {
+				int product = numbers[i] * x.numbers[j] + resultDigits[i + j + 1] + carry;
+				resultDigits[i + j + 1] = product % 10;
+				carry = product / 10;
+			}
+			resultDigits[i] += carry;
+		}
+
+		int startIndex = 0;
+		while (startIndex < resultSize && resultDigits[startIndex] == 0) {
+			++startIndex;
+		}
+
 		LongNumber result;
+		result.length = resultSize - startIndex;
+		result.numbers = new int[result.length];
+		for (int i = 0; i < result.length; ++i) {
+			result.numbers[i] = resultDigits[startIndex + i];
+		}
+		result.isNegative = isNegative != x.isNegative;
+
+		delete[] resultDigits;
+
 		return result;
 	}
 	
 	LongNumber LongNumber::operator / (const LongNumber& x) const {
-		// TODO
+		if (x == LongNumber("0")) {
+			throw std::runtime_error("division by zero");
+		}
+
+		if (numbers[0] == 0)
+			return LongNumber("0");
+
+		if (x.numbers[0] == 1) {
+			if (isNegative == x.isNegative)
+				return LongNumber(*this);
+			else
+				return LongNumber(isNegative ? *this : -LongNumber(*this));
+		}
+
 		LongNumber result;
+		LongNumber dividend(*this);
+		LongNumber divisor(x);
+		dividend.isNegative = 0;
+		divisor.isNegative = 0;
+
+		while (dividend >= divisor) {
+			int quotient = 0;
+
+			while (dividend >= divisor) {
+				dividend = dividend - divisor;
+				++quotient;
+			}
+
+			result = result + LongNumber(quotient);
+		}
+
+		result.isNegative = isNegative != x.isNegative;
+
 		return result;
 	}
 	
 	LongNumber LongNumber::operator % (const LongNumber& x) const {
-		// TODO
-		LongNumber result;
-		return result;
+		if (x == LongNumber("0"))
+			throw std::runtime_error("division by zero");
+
+		if (x == LongNumber("1") || x == LongNumber("-1"))
+			return LongNumber("0");
+
+		LongNumber dividend(*this);
+		LongNumber divisor(x);
+		dividend.isNegative = 0;
+		divisor.isNegative = 0;
+
+		while (dividend >= divisor) {
+			dividend = dividend - divisor;
+		}
+
+		dividend.isNegative = isNegative;
+
+		return dividend;
 	}
+
+
+	LongNumber& LongNumber::operator += (const LongNumber& x) {
+		*this = *this + x;
+		return *this;
+	}
+
+	LongNumber& LongNumber::operator -= (const LongNumber& x) {
+		*this = *this - x;
+		return *this;
+	}
+
+	LongNumber& LongNumber::operator *= (const LongNumber& x) {
+		*this = *this * x;
+		return *this;
+	}
+
+	LongNumber& LongNumber::operator /= (const LongNumber& x) {
+		*this = *this / x;
+		return *this;
+	}
+
+	LongNumber& LongNumber::operator %= (const LongNumber& x) {
+		*this = *this % x;
+		return *this;
+	}
+
 	
 	int LongNumber::get_digits_number() const {
 		return length;
@@ -313,6 +470,7 @@ namespace EAbrakhin {
 			std::cout << numbers[i];
 	}
 	
+
 	std::ostream& operator << (std::ostream &os, const LongNumber& x) {
 		if (x.isNegative)
 			os << '-';
@@ -324,7 +482,3 @@ namespace EAbrakhin {
 		return os;
 	}
 }
-
-// TODO
-// инит. через int
-// ввод с ведущими нулями
