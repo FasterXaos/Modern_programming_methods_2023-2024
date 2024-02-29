@@ -374,10 +374,10 @@ namespace EAbrakhin {
 			throw std::runtime_error("division by zero");
 		}
 
-		if (numbers[0] == 0)
+		if (*this == LongNumber("0"))
 			return LongNumber("0");
 
-		if (x.numbers[0] == 1) {
+		if (x == LongNumber("1") || x == LongNumber("-1")) {
 			if (isNegative == x.isNegative)
 				return LongNumber(*this);
 			else
@@ -391,17 +391,11 @@ namespace EAbrakhin {
 		divisor.isNegative = 0;
 
 		while (dividend >= divisor) {
-			int quotient = 0;
-
-			while (dividend >= divisor) {
-				dividend = dividend - divisor;
-				++quotient;
-			}
-
-			result = result + LongNumber(quotient);
+			dividend = dividend - divisor;
+			result += LongNumber("1");
 		}
 
-		result.isNegative = isNegative != x.isNegative;
+		result.isNegative = (isNegative != x.isNegative);
 
 		return result;
 	}

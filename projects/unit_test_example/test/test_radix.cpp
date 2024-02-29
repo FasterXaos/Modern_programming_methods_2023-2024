@@ -7,7 +7,7 @@ TEST(ArraysEqual, AnyElementsCount) {
 	int actual[] = { 1, 8, 2, 5, 3, 11 };
 	const int size = sizeof(actual) / sizeof(actual[0]);
 	EAbrakhin::sort_by_radix(actual, size);
-	int expected[] = { 1, 4, 3, 5, 8, 11 };
+	int expected[] = { 1, 2, 3, 5, 8, 11 };
 	
 	ASSERT_EQ(sizeof(expected) / sizeof(expected[0]), size)
 		<< "Разные размеры ожидаемого и отсортированного массивов";
