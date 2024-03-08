@@ -49,8 +49,11 @@ namespace EAbrakhin {
 
 		int get_digits_number() const;
 		bool is_negative() const;
-		void print();
+		void print() const;
 
 		friend std::ostream& operator << (std::ostream& os, const LongNumber& x);
+
+	private:
+		int get_lenght(const char* const str) const;
 	};
 }

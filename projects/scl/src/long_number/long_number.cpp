@@ -1,7 +1,4 @@
-﻿#include <algorithm>
-#include <cstring>
-
-#include "long_number.hpp"
+﻿#include "long_number.hpp"
 
 namespace EAbrakhin {
 	LongNumber::LongNumber() :
@@ -13,7 +10,7 @@ namespace EAbrakhin {
 	}
 
 	LongNumber::LongNumber(const char* const str) : 
-		length(strlen(str)), 
+		length(get_lenght(str)), 
 		isNegative(0)
 	{
 		int start_index = 0;
@@ -81,7 +78,7 @@ namespace EAbrakhin {
 		delete[] numbers;
 		isNegative = 0;
 
-		length = strlen(str);
+		length = get_lenght(str);
 
 		int start_index = 0;
 		if (str[0] == MINUS) {
@@ -222,7 +219,7 @@ namespace EAbrakhin {
 		else {
 			LongNumber result;
 			int carry = 0;
-			int max_length = std::max(length, x.length);
+			int max_length = (length > x.length) ? length : x.length;
 
 			result.length = max_length + 1;
 			delete result.numbers;
@@ -283,7 +280,7 @@ namespace EAbrakhin {
 		}
 
 		int borrow = 0;
-		int max_length = std::max(length, x.length);
+		int max_length = (length > x.length) ? length : x.length;
 
 		result.length = max_length;
 		delete[] result.numbers;
@@ -456,7 +453,7 @@ namespace EAbrakhin {
 		return isNegative;
 	}
 
-	void LongNumber::print() {
+	void LongNumber::print() const{
 		if (isNegative)
 			std::cout << MINUS;
 
@@ -474,5 +471,14 @@ namespace EAbrakhin {
 		}
 
 		return os;
+	}
+
+	int LongNumber::get_lenght(const char* const str) const {
+		const char* s = str;
+		while (*s) {
+			++s;
+		}
+
+		return (s - str);
 	}
 }
