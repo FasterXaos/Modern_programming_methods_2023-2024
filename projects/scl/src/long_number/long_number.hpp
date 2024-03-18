@@ -7,6 +7,11 @@ namespace EAbrakhin {
 		static const char MINUS = '-';
 		static const char STR_ZERO = '0';
 
+		static const LongNumber ZERO;
+		static const LongNumber ONE;
+		static const LongNumber MINUS_ONE;
+		static const LongNumber TEN;
+
 		int* numbers;
 		int length;
 		int isNegative;

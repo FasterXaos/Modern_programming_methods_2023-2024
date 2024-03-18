@@ -1,9 +1,14 @@
 ﻿#include "long_number.hpp"
 
 namespace EAbrakhin {
+	const LongNumber LongNumber::ZERO = LongNumber("0");
+	const LongNumber LongNumber::ONE = LongNumber("1");
+	const LongNumber LongNumber::MINUS_ONE = LongNumber("-1");
+	const LongNumber LongNumber::TEN = LongNumber("10");
+
 	LongNumber::LongNumber() :
-		numbers(new int[1]),
-		length(1), 
+		length(1),
+		numbers(new int[1]), 
 		isNegative(0)
 	{
 		numbers[0] = 0;
@@ -328,8 +333,8 @@ namespace EAbrakhin {
 	}
 	
 	LongNumber LongNumber::operator * (const LongNumber& x) const {
-		if (*this == LongNumber("0") || x == LongNumber("0"))
-			return LongNumber("0");
+		if (*this == ZERO || x == ZERO)
+			return ZERO;
 
 		int resultSize = length + x.length;
 		int* resultDigits = new int[resultSize];
@@ -367,55 +372,71 @@ namespace EAbrakhin {
 	}
 	
 	LongNumber LongNumber::operator / (const LongNumber& x) const {
-		if (x == LongNumber("0")) {
+		if (x == ZERO) {
 			throw std::runtime_error("division by zero");
 		}
 
-		if (*this == LongNumber("0"))
-			return LongNumber("0");
+		if (*this == ZERO)
+			return ZERO;
 
-		if (x == LongNumber("1") || x == LongNumber("-1")) {
+		if (x == ONE || x == MINUS_ONE) {
 			if (isNegative == x.isNegative)
 				return LongNumber(*this);
 			else
 				return LongNumber(isNegative ? *this : -LongNumber(*this));
 		}
 
-		LongNumber result;
 		LongNumber dividend(*this);
 		LongNumber divisor(x);
 		dividend.isNegative = 0;
 		divisor.isNegative = 0;
 
-		while (dividend >= divisor) {
-			dividend = dividend - divisor;
-			result += LongNumber("1");
+		LongNumber result, quotient, remainder;
+		int dividendIndex = 0;
+		while (dividendIndex < dividend.length) {
+			remainder *= TEN;
+			remainder += LongNumber(dividend.numbers[dividendIndex]);
+			LongNumber tempQuotient = ZERO;
+			while (remainder >= divisor) {
+				remainder -= divisor;
+				tempQuotient += ONE;
+			}
+			quotient *= TEN;
+			quotient += tempQuotient;
+			dividendIndex++;
 		}
 
+		result = quotient;
 		result.isNegative = (isNegative != x.isNegative);
 
 		return result;
 	}
 	
 	LongNumber LongNumber::operator % (const LongNumber& x) const {
-		if (x == LongNumber("0"))
+		if (x == ZERO)
 			throw std::runtime_error("division by zero");
 
-		if (x == LongNumber("1") || x == LongNumber("-1"))
-			return LongNumber("0");
+		if (x == ONE || x == MINUS_ONE)
+			return ZERO;
 
+		LongNumber remainder;
 		LongNumber dividend(*this);
 		LongNumber divisor(x);
 		dividend.isNegative = 0;
 		divisor.isNegative = 0;
 
-		while (dividend >= divisor) {
-			dividend = dividend - divisor;
+		int dividendIndex = 0;
+		while (dividendIndex < dividend.length) {
+			remainder *= TEN;
+			remainder += LongNumber(dividend.numbers[dividendIndex]);
+			while (remainder >= divisor) {
+				remainder -= divisor;
+			}
+			++dividendIndex;
 		}
 
-		dividend.isNegative = isNegative;
-
-		return dividend;
+		remainder.isNegative = isNegative;
+		return remainder;
 	}
 
 
