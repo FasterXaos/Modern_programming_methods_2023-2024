@@ -3,9 +3,86 @@
 #include <string>
 
 void count_numbers(
-	int n, int m, int& count, 
-	unsigned long long number = 0, 
+	int n, int m, int& count,
+	long number = 0,
 	long sum = 0, long product = 1
+);
+void count_palindromes(
+	int n, int d, int& count,
+	std::string number
+);
+
+namespace EAbrakhin {
+	void quick_sort(int* array, int low, int high);
+	void swap(int& x, int& y);
+
+	void quick_sort(int* array, int low, int high);
+
+	void swap(int& x, int& y);
+}
+
+void decomposite_in_terms(
+	const int n,
+	std::vector<int> vec,
+	int sum_rest,
+	int& count
+);
+
+void decomposite_in_k_terms(
+	const int n, const int k,
+	std::vector<int> vec,
+	int sum_rest, int& count
+);
+
+int main() {
+	 {
+		const int n = 3;
+		const int m = 10;
+		int count = 0;
+		count_numbers(n, m, count);
+		std::cout << "количество чисел = " << count << std::endl;
+	}
+	
+	{
+		const int n = 3;
+		const int d = 1;
+		int count = 0;
+		std::string number;
+		count_palindromes(n, d, count, number);
+		std::cout << "Количество полиндромов = " << count << std::endl; 
+	}
+	
+	{
+		int arr[] = { 3, 12, 4, 0, 6, -2, -6, 11, 3, 5, 8 };
+		const int size = sizeof(arr) / sizeof(arr[0]);
+		EAbrakhin::quick_sort(arr, 0, size - 1);
+		for (int i = 0; i < size; i++) {
+			std::cout << arr[i] << ' ';
+		}
+	}
+	
+	{
+		std::vector<int> terms;
+		const int n = 5;
+		int count = 0;
+		decomposite_in_terms(n, terms, n, count);
+		std::cout << "Количество вариантов = " << count << std::endl;
+	}
+	
+	{
+		std::vector<int> terms;
+		const int n = 10;
+		const int k = 3;
+		int count = 0;
+		decomposite_in_k_terms(n, k, terms, n, count);
+		std::cout << "Количество вариантов = " << count << std::endl;
+	}
+}
+
+void count_numbers(
+	int n, int m, int& count,
+	long number,
+	long sum, long product
 ) {
 	if (n == 0) {
 		if (product == m * sum) {
@@ -15,18 +92,14 @@ void count_numbers(
 		return;
 	}
 
-	for (int i = (n == 1) ? 1 : 0; i <= 9; ++i) {
-		unsigned long long newNumber = number * 10 + i;
-		long newSum = sum + i;
-		long newProduct = product * i;
-		count_numbers(n - 1, m, count, newNumber, newSum, newProduct);
+	for (int i = (n == 1) ? 1 : 0; i < 10; ++i) {
+		count_numbers(n - 1, m, count, number * 10 + i, sum + i, product * i);
 	}
 }
 
 void count_palindromes(
-	int n, int d, 
-	std::string number, 
-	int& count
+	int n, int d, int& count,
+	std::string number 
 ) {
 	if (number.size() == n) {
 		int sum = 0;
@@ -40,9 +113,16 @@ void count_palindromes(
 		return;
 	}
 
-	for (int i = (number.empty() ? 1 : 0); i < 10; ++i) {
-		std::string newNumber = std::to_string(i) + number + std::to_string(i);
-		count_palindromes(n, d, newNumber, count);
+	if (number.empty() && n % 2 == 1) {
+		for (int i = (n == 1) ? 1 : 0; i < 10; ++i) {
+			std::string newNumber = number + std::to_string(i);
+			count_palindromes(n, d, count, newNumber);
+		}
+	} else {
+		for (int i = (number.size() == (n - 2)) ? 1 : 0; i < 10; ++i) {
+			std::string newNumber = std::to_string(i) + number + std::to_string(i);
+			count_palindromes(n, d, count, newNumber);
+		}
 	}
 }
 
@@ -54,7 +134,6 @@ namespace EAbrakhin {
 		if (low < high) {
 			int pivot = array[high];
 			int l = low;
-
 			for (int i = low; i < high; ++i) {
 				if (array[i] < pivot)
 					swap(array[l++], array[i]);
@@ -76,11 +155,11 @@ namespace EAbrakhin {
 void decomposite_in_terms(
 	const int n,
 	std::vector<int> vec,
-	int sum_rest, 
+	int sum_rest,
 	int& count
 ) {
 	if (sum_rest == 0) {
-		count++;
+		++count;
 		std::cout << n << " = ";
 		for (int i = 0; i < vec.size() - 1; ++i) {
 			std::cout << vec[i] << " + ";
@@ -119,39 +198,4 @@ void decomposite_in_k_terms(
 		decomposite_in_k_terms(n, k, vec, sum_rest - i, count);
 		vec.pop_back();
 	}
-}
-
-int main() {
-	/*const int n = 5;
-	const int m = 10;
-	int count = 0;
-	count_numbers(n, m, count);
-	std::cout << "количество чисел = " << count << std::endl;
-
-	const int n = 5;
-	const int d = 10;
-	std::string number;
-	int count = 0;
-	count_palindromes(n, d, number, count);
-	std::cout << "Количество полиндромов = " << count << std::endl;
-
-	int arr[] = {3, 12, 4, 0, 6, -2, -6, 11, 3, 5, 8};
-	const int size = sizeof(arr) / sizeof(arr[0]);
-	EAbrakhin::quick_sort(arr, 0, size - 1);
-	for (int i = 0; i < size; i++) {
-		std::cout << arr[i] << ' ';
-	}
-
-	std::vector<int> terms;
-	const int n = 5;
-	int count = 0;
-	decomposite_in_terms(n, terms, n, count);
-	std::cout << "Количество вариантов = " << count << std::endl;
-
-	std::vector<int> terms;
-	const int n = 10;
-	const int k = 3;
-	int count = 0;
-	decomposite_in_k_terms(n, k, terms, n, count);
-	std::cout << "Количество вариантов = " << count << std::endl;*/
 }
