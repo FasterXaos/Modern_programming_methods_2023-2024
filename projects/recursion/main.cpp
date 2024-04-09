@@ -15,10 +15,6 @@ void count_palindromes(
 namespace EAbrakhin {
 	void quick_sort(int* array, int low, int high);
 	void swap(int& x, int& y);
-
-	void quick_sort(int* array, int low, int high);
-
-	void swap(int& x, int& y);
 }
 
 void decomposite_in_terms(
@@ -127,9 +123,6 @@ void count_palindromes(
 }
 
 namespace EAbrakhin {
-	void quick_sort(int* array, int low, int high);
-	void swap(int& x, int& y);
-
 	void quick_sort(int* array, int low, int high) {
 		if (low < high) {
 			int pivot = array[high];
