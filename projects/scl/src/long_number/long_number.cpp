@@ -495,6 +495,9 @@ namespace EAbrakhin {
 	}
 
 	int LongNumber::get_lenght(const char* const str) const {
+		if (str == nullptr)
+			return 0;
+
 		const char* s = str;
 		while (*s) {
 			++s;
