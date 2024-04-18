@@ -6,7 +6,8 @@ namespace EAbrakhin {
 		private:
 			T* arr;
 			int capacity = 10;
-			int size = 0;
+			int vec_size = 0;
+
 		public:
 			Vector() noexcept;
 			Vector(const Vector&) = delete;
@@ -18,6 +19,6 @@ namespace EAbrakhin {
 			bool insert(const int position, const T& value);
 			void print() const noexcept;
 			bool remove_first(const T& value) noexcept;
-			int get_size() const noexcept;
+			int size() const noexcept;
 	};
 }

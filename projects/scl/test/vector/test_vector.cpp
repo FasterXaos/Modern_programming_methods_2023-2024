@@ -4,7 +4,7 @@
 
 TEST(VectorTest, DefaultConstructor) {
     EAbrakhin::Vector<int> v;
-    EXPECT_EQ(v.get_size(), 0);
+    EXPECT_EQ(v.size(), 0);
 }
 
 TEST(VectorTest, PushBack) {
@@ -12,7 +12,7 @@ TEST(VectorTest, PushBack) {
     v.push_back(1);
     v.push_back(2);
     v.push_back(3);
-    EXPECT_EQ(v.get_size(), 3);
+    EXPECT_EQ(v.size(), 3);
 }
 
 TEST(VectorTest, HasItem) {
@@ -29,9 +29,9 @@ TEST(VectorTest, Insert) {
     v.push_back(1);
     v.push_back(3);
     v.insert(1, 2);
-    EXPECT_EQ(v.get_size(), 3);
-    EXPECT_EQ(v.has_item(2), true);
-    EXPECT_EQ(v.has_item(3), true);
+    EXPECT_EQ(v.size(), 3);
+    EXPECT_TRUE(v.has_item(2));
+    EXPECT_TRUE(v.has_item(3));
 }
 
 TEST(VectorTest, RemoveFirst) {
@@ -40,8 +40,8 @@ TEST(VectorTest, RemoveFirst) {
     v.push_back(2);
     v.push_back(1);
     v.remove_first(1);
-    EXPECT_EQ(v.get_size(), 2);
-    EXPECT_EQ(v.has_item(1), true);
+    EXPECT_EQ(v.size(), 2);
+    EXPECT_TRUE(v.has_item(1));
 }
 
 int main(int argc, char** argv) {
