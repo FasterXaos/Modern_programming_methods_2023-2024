@@ -2,21 +2,18 @@
 #include <QFontDatabase>
 #include <QTextEdit>
 
-#include "mainwindow.h"
+#include "menu.h"
 
 int main(int argc, char *argv[]){
 	QApplication app(argc, argv);
-	int app_font = QFontDatabase::addApplicationFont("assets\\fonts\\unitology.ttf");
-	QString fontFamily = QFontDatabase::applicationFontFamilies(app_font).at(0);
-	QFont customFont(fontFamily);
-	customFont.setPointSize(18);
-	//app.setFont(customFont);
 
-	MainWindow window;
-	window.resize(16*32, 16*32);
-	window.setWindowIcon(QIcon("assets\\images\\minesweeper_icon.png"));
-	window.setWindowTitle("Minesweeper");
-	window.show();
+	app.setFont(QFont("Sans", 12));
+
+	Menu* menu = new Menu();
+	menu->resize(300, 400);
+	menu->setWindowIcon(QIcon("assets\\images\\minesweeper_icon.png"));
+	menu->setWindowTitle("Minesweeper");
+	menu->show();
 
   return app.exec();
 }

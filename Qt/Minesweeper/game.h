@@ -7,12 +7,12 @@
 
 #include "cell.h"
 
-class MainWindow : public QMainWindow{
+class Game : public QMainWindow{
 		Q_OBJECT
 
 	private:
-		const int rows = 16;
-		const int cols = 16;
+		const int rows = 6;
+		const int columns = 12;
 		const int mine_сount = 40;
 		std::vector<std::vector<Cell*>> cells;
 
@@ -23,6 +23,12 @@ class MainWindow : public QMainWindow{
 		void createMenu();
 
 	public:
-		MainWindow(QWidget *parent = nullptr);
-		~MainWindow();
+		Game(QWidget *parent = nullptr);
+		~Game();
+
+		const int getRows() const;
+		const int getColumns() const;
+
+	private slots:
+		void returnToStartMenu();
 };
