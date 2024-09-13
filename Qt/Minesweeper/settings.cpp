@@ -37,8 +37,8 @@ void Settings::onApplyClicked() {
 		custom_font = QFont("Sans", 12);
 	}
 	else if (selected_font == "Unitology") {
-		int app_font = QFontDatabase::addApplicationFont("assets/fonts/unitology.ttf");
-		QString font_family = QFontDatabase::applicationFontFamilies(app_font).at(0);
+		int app_font_id = QFontDatabase::addApplicationFont("assets/fonts/unitology.ttf");
+		QString font_family = QFontDatabase::applicationFontFamilies(app_font_id).at(0);
 		custom_font = QFont(font_family, 12);
 	}
 
