@@ -17,12 +17,12 @@ class Snake: public QWidget{
 		QImage head;
 		QImage apple;
 
-		static const int B_WIDTH = 100;
-		static const int B_HEIGHT = 100;
+		static const int B_WIDTH = 150;
+		static const int B_HEIGHT = 150;
 		static const int DOT_SIZE = 10;
-		static const int ALL_DOTS = 25;
-		static const int RAND_POS = 5;
-		static const int DELAY = 500;
+		static const int ALL_DOTS = 225;
+		static const int RAND_POS = 15;
+		static const int DELAY = 200;
 
 		int timerId;
 		int dots;

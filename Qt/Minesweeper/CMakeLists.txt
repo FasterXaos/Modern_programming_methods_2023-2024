@@ -12,21 +12,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
+include_directories(include)
+
+set(RESOURCE_FILES
+    assets/assets.qrc
+)
+
 set(PROJECT_SOURCES
         main.cpp
-        game.cpp
-        game.h
-        game.ui
+        include/cell.h src/cell.cpp
+        include/game.h src/game.cpp
+        include/menu.h src/menu.cpp
+        include/settings.h src/settings.cpp
+        include/timer.h src/timer.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Minesweeper
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        cell.h cell.cpp
-        menu.h menu.cpp
-        settings.h settings.cpp
-        timer.h timer.cpp
+        ${RESOURCE_FILES}
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Minesweeper APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -36,12 +41,14 @@ else()
     if(ANDROID)
         add_library(Minesweeper SHARED
             ${PROJECT_SOURCES}
+            ${RESOURCE_FILES}
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
         add_executable(Minesweeper
             ${PROJECT_SOURCES}
+            ${RESOURCE_FILES}
         )
     endif()
 endif()

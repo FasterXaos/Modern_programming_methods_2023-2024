@@ -7,6 +7,7 @@ int main(int argc, char *argv[]){
 
 	Snake window;
 	window.setWindowTitle("Snake");
+	window.setWindowIcon(QIcon(":/apple.png"));
 	window.show();
 
 	return app.exec();

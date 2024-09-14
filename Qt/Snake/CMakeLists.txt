@@ -12,17 +12,22 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
+include_directories(include)
+
+set(RESOURCE_FILES
+    assets/assets.qrc
+)
+
 set(PROJECT_SOURCES
         main.cpp
-        snake.cpp
-        snake.h
-        snake.ui
+        include/snake.h src/snake.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Snake
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        ${RESOURCE_FILES}
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Snake APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -32,12 +37,14 @@ else()
     if(ANDROID)
         add_library(Snake SHARED
             ${PROJECT_SOURCES}
+            ${RESOURCE_FILES}
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
         add_executable(Snake
             ${PROJECT_SOURCES}
+            ${RESOURCE_FILES}
         )
     endif()
 endif()
