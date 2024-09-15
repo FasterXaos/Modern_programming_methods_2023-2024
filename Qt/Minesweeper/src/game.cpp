@@ -1,9 +1,16 @@
-#include <QRandomGenerator>
+#include <QDialog>
 #include <QFontDatabase>
+#include <QFormLayout>
+#include <QIntValidator>
+#include <QLineEdit>
+#include <QRandomGenerator>
+#include <QTime>
 
+#include "cell.h"
+#include "customdialog.h"
 #include "game.h"
 #include "menu.h"
-#include "cell.h"
+#include "records.h"
 
 namespace AED {
 	Game::Game(QWidget *parent): QMainWindow(parent){
@@ -86,36 +93,6 @@ namespace AED {
 		delete gameTimer;
 	}
 
-	void Game::onCheckForWin() {
-		bool won = true;
-		for (int row = 0; row < rows; ++row) {
-			for (int column = 0; column < columns; ++column) {
-				Cell* cell = cells[row][column];
-				if ((cell->hasMine && !cell->isFlagged) || (!cell->hasMine && cell->isFlagged)) {
-					won = false;
-					break;
-				}
-
-				if (!cell->hasMine && !cell->isOpened) {
-					won = false;
-					break;
-				}
-			}
-			if (!won) break;
-		}
-
-		if (won) {
-			gameTimer->stop();
-			minesCounter->setStyleSheet("color: green;");
-			timerLabel->setStyleSheet("color: green;");
-
-			for (int row = 0; row < rows; ++row) {
-				for (int column = 0; column < columns; ++column) {
-					cells[row][column]->isBlocked = true;
-				}
-			}
-		}
-	}
 
 	void Game::createField() {
 		cells = new Cell**[rows];
@@ -130,6 +107,7 @@ namespace AED {
 				connect(cells[row][column], &Cell::flagAdded, this, &Game::onFlagAdded);
 				connect(cells[row][column], &Cell::flagRemoved, this, &Game::onFlagRemoved);
 				connect(cells[row][column], &Cell::mineClicked, this, &Game::onGameLost);
+				connect(cells[row][column], &Cell::openedCellClicked, this, &Game::onOpenedCellClicked);
 			}
 		}
 
@@ -182,12 +160,43 @@ namespace AED {
 		gameMenu->setStyleSheet("QMenu::item {padding: 5px 5px;}");
 		menuBar->addMenu(gameMenu);
 
-		QAction* menuAction = new QAction("Menu", this);
-		connect(menuAction, &QAction::triggered, this, &Game::onReturnToStartMenu);
-		gameMenu->addAction(menuAction);
 
+		QAction* restartAction = new QAction("Restart", this);
+		connect(restartAction, &QAction::triggered, this, &Game::onRestartGame);
+		gameMenu->addAction(restartAction);
+
+		gameMenu->addSeparator();
+
+		QAction* beginnerAction = new QAction("Beginner", this);
+		QAction* intermediateAction = new QAction("Intermediate", this);
+		QAction* expertAction = new QAction("Expert", this);
+		QAction* customAction = new QAction("Custom", this);
+
+		connect(beginnerAction, &QAction::triggered, this, &Game::onBeginnerSelected);
+		connect(intermediateAction, &QAction::triggered, this, &Game::onIntermediateSelected);
+		connect(expertAction, &QAction::triggered, this, &Game::onExpertSelected);
+		connect(customAction, &QAction::triggered, this, &Game::onCustomSelected);
+
+		gameMenu->addAction(beginnerAction);
+		gameMenu->addAction(intermediateAction);
+		gameMenu->addAction(expertAction);
+		gameMenu->addAction(customAction);
+
+		gameMenu->addSeparator();
+
+		QAction* recordsAction = new QAction("Records", this);
+		connect(recordsAction, &QAction::triggered, this, &Game::onRecordsSelected);
+		gameMenu->addAction(recordsAction);
+
+		gameMenu->addSeparator();
+
+		QAction* menuAction = new QAction("Menu", this);
 		QAction* quitAction = new QAction("Quit", this);
+
+		connect(menuAction, &QAction::triggered, this, &Game::onReturnToStartMenu);
 		connect(quitAction, &QAction::triggered, this, &Game::close);
+
+		gameMenu->addAction(menuAction);
 		gameMenu->addAction(quitAction);
 	}
 
@@ -204,26 +213,24 @@ namespace AED {
 		}
 	}
 
-	void Game::restartGame() {
+	void Game::restartGame(int newRows, int newColumns, int newMineCount) {
 		for (int row = 0; row < rows; ++row) {
-			for (int column = 0; column < columns; ++column) {
-				delete cells[row][column];
+			for (int col = 0; col < columns; ++col) {
+				delete cells[row][col];
 			}
+			delete[] cells[row];
 		}
+		delete[] cells;
 
-		for (int row = 0; row < rows; ++row) {
-			for (int column = 0; column < columns; ++column) {
-				cells[row][column] = new Cell(row, column, this);
-				fieldGLayout->addWidget(cells[row][column], row, column);
-			}
-		}
+		rows = newRows;
+		columns = newColumns;
+		mineCount = newMineCount;
+		createField();
 
 		minesCounter->setText("Mines:" + QString::number(mineCount));
 		minesCounter->setStyleSheet("color: red;");
 
 		resetButton->setIcon(QIcon(":/images/minesweeper_button.png"));
-
-		createField();
 
 		timerLabel->setStyleSheet("color: red;");
 		gameTimer->reset();
@@ -249,6 +256,88 @@ namespace AED {
 		}
 	}
 
+
+	void Game::onBeginnerSelected() {
+		restartGame(9, 12, 14);
+	}
+
+	void Game::onCheckForWin() {
+		bool won = true;
+		for (int row = 0; row < rows; ++row) {
+			for (int column = 0; column < columns; ++column) {
+				Cell* cell = cells[row][column];
+				if ((cell->hasMine && !cell->isFlagged) || (!cell->hasMine && cell->isFlagged)) {
+					won = false;
+					break;
+				}
+			}
+			if (!won) break;
+		}
+
+		if (won) {
+			gameTimer->stop();
+			minesCounter->setStyleSheet("color: green;");
+			timerLabel->setStyleSheet("color: green;");
+
+			for (int row = 0; row < rows; ++row) {
+				for (int column = 0; column < columns; ++column) {
+					Cell* cell = cells[row][column];
+					if (!cell->isFlagged && !cell->isOpened) {
+						cell->showCell();
+					}
+					cell->isBlocked = true;
+				}
+			}
+
+			int elapsedTime = gameTimer->getElapsedTime();
+			QString timeStr = QString::number(elapsedTime) + "s";
+			Records records;
+			QString difficulty;
+
+			if (rows == 9 && columns == 12 && mineCount == 14) {
+				difficulty = "Beginner";
+			}
+			else if (rows == 16 && columns == 16 && mineCount == 40) {
+				difficulty = "Intermediate";
+			}
+			else if (rows == 16 && columns == 30 && mineCount == 99) {
+				difficulty = "Expert";
+			}
+			else {
+				difficulty = "Custom";
+			}
+
+			QString recordData = records.getRecordData();
+			QStringList lines = recordData.split('\n');
+			QString currentRecordTime = lines[difficulty == "Beginner" ? 0 :
+											difficulty == "Intermediate" ? 1 :
+											difficulty == "Expert" ? 2 : 0].split('\t').at(1).trimmed();
+
+			QString timeStrWithoutS = timeStr.left(timeStr.length() - 1);
+			QString recordTimeWithoutS = currentRecordTime.left(currentRecordTime.length() - 1);
+
+			if (timeStrWithoutS.toInt() < recordTimeWithoutS.toInt()) {
+				records.setRecordData(difficulty, timeStr);
+			}
+		}
+	}
+
+	void Game::onCustomSelected(){
+		CustomDialog dialog(this);
+
+		if (dialog.exec() == QDialog::Accepted) {
+			int newRows = std::clamp(dialog.getRows(), 9, 24);
+			int newColumns = std::clamp(dialog.getColumns(), 9, 36);
+			int newMines = std::clamp(dialog.getMines(), 1, newRows * newColumns - 1);
+
+			restartGame(newRows, newColumns, newMines);
+		}
+	}
+
+	void Game::onExpertSelected() {
+		restartGame(16, 30, 99);
+	}
+
 	void Game::onFlagAdded() {
 		int remainingMines = minesCounter->text().mid(6).toInt();
 		minesCounter->setText("Mines:" + QString::number(--remainingMines));
@@ -269,7 +358,55 @@ namespace AED {
 				cells[row][column]->isBlocked = true;
 			}
 		}
-	};
+	}
+
+	void Game::onIntermediateSelected() {
+		restartGame(16, 16, 40);
+	}
+
+	void Game::onOpenedCellClicked(int row, int column){
+		int flaggedCount = 0;
+
+		for (int i = -1; i <= 1; ++i) {
+			for (int j = -1; j <= 1; ++j) {
+				if (i == 0 && j == 0) {
+					continue;
+				}
+
+				int newRow = row + i;
+				int newColumn = column + j;
+				if (newRow >= 0 && newRow < rows && newColumn >= 0 && newColumn < columns && cells[newRow][newColumn]->isFlagged) {
+						++flaggedCount;
+				}
+			}
+		}
+
+		if (flaggedCount == cells[row][column]->surroundingMinesCount) {
+			openAdjacentCells(row, column);
+		}
+	}
+
+	void Game::onRecordsSelected() {
+		Records records;
+		QString recordData = records.getRecordData();
+
+		QDialog* recordsDialog = new QDialog(this);
+		recordsDialog->setWindowIcon(QIcon(":/images/minesweeper_icon.png"));
+		recordsDialog->setWindowTitle("Records");
+		recordsDialog->setFixedSize(190, 120);
+
+		QLabel* recordsLabel = new QLabel(recordData, recordsDialog);
+
+		QPushButton* closeButton = new QPushButton("Close", recordsDialog);
+		connect(closeButton, &QPushButton::clicked, recordsDialog, &QDialog::accept);
+
+		QVBoxLayout* dialogLayout = new QVBoxLayout(recordsDialog);
+		dialogLayout->addWidget(recordsLabel);
+		dialogLayout->addWidget(closeButton);
+
+		recordsDialog->setLayout(dialogLayout);
+		recordsDialog->exec();
+	}
 
 	void Game::onResetButtonPressed() {
 		resetButton->setIcon(QIcon(":/images/minesweeper_button_pressed.png"));
@@ -277,7 +414,11 @@ namespace AED {
 
 	void Game::onResetButtonReleased() {
 		resetButton->setIcon(QIcon(":/images/minesweeper_button.png"));
-		restartGame();
+		restartGame(rows, columns, mineCount);
+	}
+
+	void Game::onRestartGame(){
+		restartGame(rows, columns, mineCount);
 	}
 
 	void Game::onReturnToStartMenu() {

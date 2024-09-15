@@ -37,10 +37,11 @@ namespace AED {
 
 		signals:
 			void checkForWin();
-			void emptyCellOpened(int row, int col);
+			void emptyCellOpened(int row, int column);
 			void flagAdded();
 			void flagRemoved();
 			void mineClicked();
+			void openedCellClicked(int row, int column);
 
 		private slots:
 			void onCellPressed();

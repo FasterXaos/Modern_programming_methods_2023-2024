@@ -18,9 +18,10 @@ namespace AED {
 		Timer(QLabel* label, QObject* parent = nullptr);
 		~Timer();
 
+		int getElapsedTime() const;
+		void reset();
 		void start();
 		void stop();
-		void reset();
 
 	signals:
 		void timeIsUp();

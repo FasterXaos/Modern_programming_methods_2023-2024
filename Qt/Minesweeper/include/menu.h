@@ -10,8 +10,9 @@ namespace AED {
 			Menu(QWidget *parent = nullptr);
 
 		private slots:
-			void onPlayButtonClicked();
-			void onSettingsButtonClicked();
 			void onExitButtonClicked();
+			void onPlayButtonClicked();
+			void onRecordsButtonClicked();
+			void onSettingsButtonClicked();
 	};
 }

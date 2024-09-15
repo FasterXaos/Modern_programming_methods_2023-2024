@@ -52,6 +52,7 @@ namespace AED {
 		setIcon(QIcon(scaledPixmap));
 	}
 
+
 	void Cell::mousePressEvent(QMouseEvent* event) {
 		if (isBlocked) {
 			return;
@@ -70,7 +71,11 @@ namespace AED {
 				scaledPixmap = hidenIcon.scaled(size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 			}
 			setIcon(QIcon(scaledPixmap));
-		} else {
+		}
+		if (event->button() == Qt::LeftButton && isOpened){
+			emit openedCellClicked(row, column);
+		}
+		else {
 			QPushButton::mousePressEvent(event);
 		}
 		emit checkForWin();
@@ -93,6 +98,7 @@ namespace AED {
 
 		QPushButton::resizeEvent(event);
 	}
+
 
 	void Cell::onCellPressed() {
 		if (!isOpened && !isFlagged) {

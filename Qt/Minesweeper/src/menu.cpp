@@ -1,7 +1,9 @@
 #include <QApplication>
+#include <QMessageBox>
 
-#include "menu.h"
 #include "game.h"
+#include "menu.h"
+#include "records.h"
 #include "settings.h"
 
 namespace AED {
@@ -27,7 +29,13 @@ namespace AED {
 
 		connect(playButton, &QPushButton::clicked, this, &Menu::onPlayButtonClicked);
 		connect(settingsButton, &QPushButton::clicked, this, &Menu::onSettingsButtonClicked);
+		connect(recordsButton, &QPushButton::clicked, this, &Menu::onRecordsButtonClicked);
 		connect(exitButton, &QPushButton::clicked, this, &Menu::onExitButtonClicked);
+	}
+
+
+	void Menu::onExitButtonClicked() {
+		QApplication::quit();
 	}
 
 	void Menu::onPlayButtonClicked() {
@@ -40,16 +48,33 @@ namespace AED {
 		this->close();
 	}
 
+	void Menu::onRecordsButtonClicked() {
+		Records records;
+		QString recordData = records.getRecordData();
+
+		QDialog *recordsDialog = new QDialog(this);
+		recordsDialog->setWindowIcon(QIcon(":/images/minesweeper_icon.png"));
+		recordsDialog->setWindowTitle("Records");
+		 recordsDialog->setFixedSize(190, 120);
+
+		QLabel *recordsLabel = new QLabel(recordData, recordsDialog);
+		QPushButton *closeButton = new QPushButton("Close", recordsDialog);
+		connect(closeButton, &QPushButton::clicked, recordsDialog, &QDialog::accept);
+
+		QVBoxLayout *dialogLayout = new QVBoxLayout(recordsDialog);
+		dialogLayout->addWidget(recordsLabel);
+		dialogLayout->addWidget(closeButton);
+
+		recordsDialog->setLayout(dialogLayout);
+		recordsDialog->exec();
+	}
+
 	void Menu::onSettingsButtonClicked() {
 		Settings *settingsWindow = new Settings();
 		settingsWindow->setWindowIcon(QIcon(":/images/minesweeper_icon.png"));
-		settingsWindow->setWindowTitle("Minesweeper");
+		settingsWindow->setWindowTitle("Settings");
 		settingsWindow->show();
 
 		this->close();
-	}
-
-	void Menu::onExitButtonClicked() {
-		QApplication::quit();
 	}
 }

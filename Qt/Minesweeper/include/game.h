@@ -12,9 +12,9 @@ namespace AED {
 			Q_OBJECT
 
 		private:
-			const int rows = 6;
-			const int columns = 6;
-			const int mineCount = 5;
+			int rows = 9;
+			int columns = 12;
+			int mineCount = 14;
 			Cell*** cells;
 
 			QWidget* centralWidget;
@@ -28,12 +28,6 @@ namespace AED {
 			QLabel* timerLabel;
 			Timer* gameTimer;
 
-			void createField();
-			void createMenu();
-			void openAdjacentCells(int row, int column);
-			void restartGame();
-			void showMines();
-
 		public:
 			Game(QWidget *parent = nullptr);
 			~Game();
@@ -41,16 +35,30 @@ namespace AED {
 			const int getRows() const {return rows;}
 			const int getColumns() const {return columns;};
 
+		private:
+			void createField();
+			void createMenu();
+			void openAdjacentCells(int row, int column);
+			void restartGame(int newRows, int newColumns, int newMineCount);
+			void showMines();
+
 		signals:
 			void gameLost();
 
 		private slots:
+			void onBeginnerSelected();
 			void onCheckForWin();
+			void onCustomSelected();
+			void onExpertSelected();
 			void onFlagAdded();
 			void onFlagRemoved();
 			void onGameLost();
+			void onIntermediateSelected();
+			void onOpenedCellClicked(int row, int column);
+			void onRecordsSelected();
 			void onResetButtonPressed();
 			void onResetButtonReleased();
+			void onRestartGame();
 			void onReturnToStartMenu();
 	};
 }

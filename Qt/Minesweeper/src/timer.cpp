@@ -8,6 +8,16 @@ namespace AED {
 		connect(timer, &QTimer::timeout, this, &Timer::onUpdateTime);
 	}
 
+
+	int AED::Timer::getElapsedTime() const {
+		return elapsedTime;
+	}
+
+	void Timer::reset() {
+		elapsedTime = 0;
+		label->setText("Time:000");
+	}
+
 	Timer::~Timer() {
 		delete timer;
 		delete label;
@@ -21,10 +31,6 @@ namespace AED {
 		timer->stop();
 	}
 
-	void Timer::reset() {
-		elapsedTime = 0;
-		label->setText("Time:000");
-	}
 
 	void Timer::onUpdateTime() {
 		++elapsedTime;

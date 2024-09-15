@@ -23,8 +23,10 @@ set(PROJECT_SOURCES
         include/cell.h src/cell.cpp
         include/game.h src/game.cpp
         include/menu.h src/menu.cpp
+        include/records.h src/records.cpp
         include/settings.h src/settings.cpp
         include/timer.h src/timer.cpp
+        include/customdialog.h src/customdialog.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

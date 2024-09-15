@@ -25,6 +25,7 @@ namespace AED {
 		connect(applyButton, &QPushButton::clicked, this, &Settings::onApplyClicked);
 	}
 
+
 	void Settings::onApplyClicked() {
 		QString selectedFont = fontComboBox->currentText();
 
