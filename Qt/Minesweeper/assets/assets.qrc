@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="">
+		<file>images/cell_0.png</file>
+		<file>images/cell_1.png</file>
+		<file>images/cell_2.png</file>
+		<file>images/cell_3.png</file>
+		<file>images/cell_4.png</file>
+		<file>images/cell_5.png</file>
+		<file>images/cell_6.png</file>
+		<file>images/cell_7.png</file>
+		<file>images/cell_8.png</file>
+		<file>images/cell_9.png</file>
+		<file>images/cell_10.png</file>
+		<file>images/cell_11.png</file>
+		<file>images/cell_12.png</file>
+		<file>images/cell_13.png</file>
+		<file>images/minesweeper_button.png</file>
+		<file>images/minesweeper_button_pressed.png</file>
+        <file>images/minesweeper_game_over.png</file>
+        <file>images/minesweeper_icon.png</file>
+		
+        <file>fonts/digital_numbers.ttf</file>
+		<file>fonts/unitology.ttf</file>
+    </qresource>
+</RCC>
